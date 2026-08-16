@@ -10,6 +10,9 @@ project/project/
 .metals/
 .vscode/
 .idea/
+project/metals.sbt
+project/project/metals.sbt
+*.semanticdb
 
 # OS / misc
 *.class
