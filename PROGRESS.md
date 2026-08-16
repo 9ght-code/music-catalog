@@ -38,11 +38,37 @@ psql: `& 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -U postgres -h localhost 
 - [x] Основы Scala (день 1): val/var, выражения, case class, pattern matching,
       Option, collections (map/filter/groupBy/sortBy/take/foldLeft) — задачи в `playground/tasks1.scala`
 - [x] Проект 1, милстоун 0: подключение к PostgreSQL из Scala через JDBC —
-      `music-catalog/src/main/scala/Main.scala` (Using.resource, ResultSet-итерация)
-- [ ] Проект 1, милстоун 1: схема БД — ждём `db/schema.sql` + `db/seed.sql` от пользователя
-- [ ] Проект 1: REST (CRUD, фильтры, пагинация, tsvector-поиск, похожие треки), тесты, README
+      `Using.resource`, `ResultSet`-итерация
+- [x] Проект 1, милстоун 1: схема БД + сид — `music-catalog/db/schema.sql` и `db/seed.sql`
+      (5 таблиц, M2M `track_genres` с составным PK, каскады, применено к базе)
+- [x] Проект 1, милстоун 2: модели + repository-слой на JDBC
+      (`ArtistRepository`, `TrackRepository`)
+- [x] Проект 1, милстоун 3: REST API на cask — `GET /artists`, `GET /artists/:id` (404),
+      `GET /tracks` (жанры через string_agg). Проверено curl'ом.
+- [x] Проект 1, архитектура: слои model / repository / service / api, Main — bootstrap
+- [ ] Проект 1: CRUD (POST/PUT/DELETE), фильтры, пагинация, tsvector-поиск,
+      похожие треки, тесты (munit), README
 - [ ] Проект 2: sea-battle
 - [ ] Проект 3: crypto-tracker
+
+## Архитектура проекта 1 (music-catalog)
+
+Классическая слоёная архитектура, зависимости смотрят вниз:
+`api → service → repository → model`
+
+```
+src/main/scala/
+├── Main.scala          bootstrap: соединение + wiring, extends cask.Main,
+│                       allRoutes = Seq(ArtistRoutes(...), TrackRoutes(...))
+├── model/              case class'ы (домен): Artist, Album, Track, Genre, TrackWithGenres
+├── repository/         JDBC-доступ: ArtistRepository, TrackRepository
+├── service/            бизнес-логика: ArtistService, TrackService (тонкие, пока проброс)
+└── api/                HTTP: ArtistRoutes, TrackRoutes (классы cask.Routes)
+```
+
+- DI — просто передача зависимостей в конструктор (Main собирает цепочку)
+- Роуты — классы `cask.Routes` с `(implicit cc: castor.Context, log: cask.Logger)`
+- JSON: ручная сборка `ujson.Obj` в api-слое (позже можно upickle-деривация)
 
 ## Роли и правила
 
@@ -62,5 +88,15 @@ psql: `& 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -U postgres -h localhost 
 
 ## Следующий шаг
 
-Проверить `db/schema.sql` и `db/seed.sql` от пользователя, применить к базе,
-показать результат, затем милстоун 2 (repository-слой на JDBC).
+CRUD: `POST /artists` (создание, валидация в service), `DELETE /artists/:id`
+(каскады в базе уже настроены), затем фильтры/пагинация и tsvector-поиск
+(`/search?q=...`), тесты на munit, README.
+
+## Запуск
+
+```powershell
+cd music-catalog
+sbt run          # сервер на http://localhost:8080
+```
+
+Проверка: `curl http://localhost:8080/artists` и `curl http://localhost:8080/tracks`.

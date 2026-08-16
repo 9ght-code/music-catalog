@@ -1,4 +1,7 @@
+package repository
+
 import java.sql.Connection
+import model.Artist
 import scala.collection.mutable.ListBuffer
 import scala.util.Using 
 
