@@ -6,6 +6,7 @@ lazy val root = (project in file("."))
     name := "music-catalog",
     libraryDependencies ++= Seq(
       "org.postgresql" % "postgresql" % "42.7.5",
-      "org.scalameta" %% "munit" % "1.0.4" % Test
+      "org.scalameta" %% "munit" % "1.0.4" % Test,
+      "com.lihaoyi" %% "cask" % "0.11.3"
     )
   )
