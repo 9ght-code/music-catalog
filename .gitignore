@@ -17,3 +17,11 @@ metals.sbt
 *.class
 *.log
 .DS_Store
+
+# Temp files
+sbt-*.txt
+test-output.txt
+
+# Python
+__pycache__/
+*.pyc

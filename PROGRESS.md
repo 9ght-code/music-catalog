@@ -46,8 +46,11 @@ psql: `& 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -U postgres -h localhost 
 - [x] Проект 1, милстоун 3: REST API на cask — `GET /artists`, `GET /artists/:id` (404),
       `GET /tracks` (жанры через string_agg). Проверено curl'ом.
 - [x] Проект 1, архитектура: слои model / repository / service / api, Main — bootstrap
-- [ ] Проект 1: CRUD (POST/PUT/DELETE), фильтры, пагинация, tsvector-поиск,
-      похожие треки, тесты (munit), README
+- [x] Проект 1, CRUD: POST/PUT/DELETE для артистов (валидация через Either)
+- [x] Проект 1, маппинг: extension methods в mappers/
+- [x] Проект 1, DI: trait ArtistRepositoryInterface + MockArtistRepository для тестов
+- [x] Проект 1, GUI: десктопное приложение (customtkinter + requests)
+- [ ] Проект 1: фильтры, пагинация, tsvector-поиск, похожие треки, README
 - [ ] Проект 2: sea-battle
 - [ ] Проект 3: crypto-tracker
 
@@ -61,9 +64,14 @@ src/main/scala/
 ├── Main.scala          bootstrap: соединение + wiring, extends cask.Main,
 │                       allRoutes = Seq(ArtistRoutes(...), TrackRoutes(...))
 ├── model/              case class'ы (домен): Artist, Album, Track, Genre, TrackWithGenres
-├── repository/         JDBC-доступ: ArtistRepository, TrackRepository
-├── service/            бизнес-логика: ArtistService, TrackService (тонкие, пока проброс)
-└── api/                HTTP: ArtistRoutes, TrackRoutes (классы cask.Routes)
+├── repository/         JDBC-доступ: ArtistRepository, TrackRepository + Trait для DI
+├── service/            бизнес-логика: ArtistService, TrackService (валидация, Either)
+├── api/                HTTP: ArtistRoutes, TrackRoutes (классы cask.Routes)
+└── mappers/            extension methods: model → ujson.Obj
+src/test/scala/
+├── ArtistServiceSuite.scala    тесты сервиса (munit + mock)
+└── mock/MockArtistRepository.scala
+gui.py                  десктопный GUI (customtkinter)
 ```
 
 - DI — просто передача зависимостей в конструктор (Main собирает цепочку)
@@ -88,9 +96,8 @@ src/main/scala/
 
 ## Следующий шаг
 
-CRUD: `POST /artists` (создание, валидация в service), `DELETE /artists/:id`
-(каскады в базе уже настроены), затем фильтры/пагинация и tsvector-поиск
-(`/search?q=...`), тесты на munit, README.
+Фильтры/пагинация и tsvector-поиск (`/search?q=...`), похожие треки,
+тесты (munit + mock), README → затем проект 2 (sea-battle).
 
 ## Запуск
 
