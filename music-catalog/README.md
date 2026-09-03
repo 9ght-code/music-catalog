@@ -20,6 +20,40 @@ api → service → repository → model
 Main (bootstrap)
 ```
 
+## Структура проекта
+
+```
+music-catalog/
+├── README.md
+├── build.sbt
+├── gui.py                          # Десктопный GUI (Python)
+├── db/
+│   ├── schema.sql                  # Схема БД
+│   └── seed.sql                    # Тестовые данные
+└── src/
+    ├── main/scala/
+    │   ├── Main.scala              # Bootstrap: соединение + wiring
+    │   ├── model/
+    │   │   └── Models.scala        # Artist, Album, Track, Genre, TrackWithGenres
+    │   ├── repository/
+    │   │   ├── ArtistRepositoryTrait.scala  # Интерфейс для DI
+    │   │   ├── ArtistRepository.scala       # JDBC-доступ к artists
+    │   │   ├── TrackRepositoryTrait.scala
+    │   │   └── TrackRepository.scala        # JDBC-доступ к tracks
+    │   ├── service/
+    │   │   ├── ArtistService.scala  # Валидация + бизнес-логика
+    │   │   └── TrackService.scala
+    │   ├── api/
+    │   │   ├── ArtistRoutes.scala   # REST: CRUD артистов
+    │   │   └── TrackRoutes.scala    # REST: треки
+    │   └── mappers/
+    │       └── mappers.scala        # Extension methods → JSON
+    └── test/scala/
+        ├── ArtistServiceSuite.scala  # Тесты сервиса (munit)
+        └── mock/
+            └── MockArtistRepository.scala
+```
+
 - **model/** — case class'ы (Artist, Album, Track, Genre, TrackWithGenres)
 - **repository/** — JDBC-доступ к данным (SQL-запросы, маппинг ResultSet)
 - **service/** — бизнес-логика, валидация (Either[String, Artist])
